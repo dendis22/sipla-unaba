@@ -58,13 +58,14 @@ export const INITIAL_DEVICES: Device[] = [
 ];
 
 export const STUDY_PROGRAMS = [
-  'Teknik Informatika',
-  'Sistem Informasi',
-  'Teknik Elektro',
-  'Teknik Industri',
-  'Sistem Komputer',
-  'Akuntansi',
-  'Manajemen',
+  'D3 Manajemen Pelayanan Rumah Sakit',
+  'S1 Kesehatan Masyarakat',
+  'S1 Sistem Informasi',
+  'S1 Psikologi',
+  'S1 Administrasi Rumah Sakit',
+  'S1 Manajemen',
+  'S1 Akuntansi',
+  'S2 Kesehatan Masyarakat',
 ];
 
 export const INITIAL_LOANS: Loan[] = [
@@ -72,7 +73,7 @@ export const INITIAL_LOANS: Loan[] = [
     id: 'L-2026-001',
     studentName: 'Ahmad Faisal',
     studentId: '10123045',
-    studyProgram: 'Teknik Informatika',
+    studyProgram: 'S1 Kesehatan Masyarakat',
     mobileNumber: '081234567890',
     borrowDate: '2026-06-16',
     returnDate: '2026-06-18',
@@ -90,7 +91,7 @@ export const INITIAL_LOANS: Loan[] = [
     id: 'L-2026-002',
     studentName: 'Zahra Amalia',
     studentId: '10223012',
-    studyProgram: 'Sistem Informasi',
+    studyProgram: 'S1 Sistem Informasi',
     mobileNumber: '085799881122',
     borrowDate: '2026-06-19',
     returnDate: '2026-06-20',
@@ -108,7 +109,7 @@ export const INITIAL_LOANS: Loan[] = [
     id: 'L-2026-003',
     studentName: 'Budi Santoso',
     studentId: '10122099',
-    studyProgram: 'Teknik Elektro',
+    studyProgram: 'S1 Administrasi Rumah Sakit',
     mobileNumber: '082188776655',
     borrowDate: '2026-06-10',
     returnDate: '2026-06-12',
@@ -124,7 +125,7 @@ export const INITIAL_LOANS: Loan[] = [
     id: 'L-2026-004',
     studentName: 'Rian Hidayat',
     studentId: '10323044',
-    studyProgram: 'Manajemen',
+    studyProgram: 'S1 Manajemen',
     mobileNumber: '089900112233',
     borrowDate: '2026-06-13',
     returnDate: '2026-06-14',
