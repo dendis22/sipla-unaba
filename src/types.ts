@@ -19,7 +19,9 @@ export interface Loan {
   studyProgram: string;
   mobileNumber: string;
   borrowDate: string;
+  borrowTime?: string;
   returnDate: string;
+  returnTime?: string;
   deviceId: string;
   deviceName: string;
   deviceCategory: DeviceCategory;

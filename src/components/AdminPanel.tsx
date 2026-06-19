@@ -379,11 +379,11 @@ export default function AdminPanel({
                           <p className="text-slate-500">
                             Durasi Pinjam:{' '}
                             <span className="text-slate-800 bg-blue-50 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">
-                              {loan.borrowDate}
+                              {loan.borrowDate}{loan.borrowTime ? ` (${loan.borrowTime})` : ''}
                             </span>{' '}
                             s/d{' '}
                             <span className="text-slate-800 bg-blue-50 px-1.5 py-0.5 rounded font-mono font-bold text-[11px]">
-                              {loan.returnDate}
+                              {loan.returnDate}{loan.returnTime ? ` (${loan.returnTime})` : ''}
                             </span>
                           </p>
                           <p>
@@ -723,8 +723,11 @@ export default function AdminPanel({
                         &ldquo;{loan.purpose}&rdquo;
                       </td>
                       <td className="p-4">
-                        <span className="font-mono text-[10px] bg-slate-100 p-1 px-1.5 rounded text-slate-700">
-                          {loan.borrowDate} ~ {loan.returnDate}
+                        <span className="font-mono text-[10px] bg-slate-105 p-1 px-1.5 rounded text-slate-700 block whitespace-nowrap">
+                          {loan.borrowDate}{loan.borrowTime ? ` (${loan.borrowTime})` : ''}
+                        </span>
+                        <span className="font-mono text-[10px] bg-slate-105 p-1 px-1.5 rounded text-slate-700 block mt-1 whitespace-nowrap">
+                          ~ {loan.returnDate}{loan.returnTime ? ` (${loan.returnTime})` : ''}
                         </span>
                       </td>
                       <td className="p-4 font-semibold">
@@ -821,7 +824,9 @@ export default function AdminPanel({
                 <td className="p-2 border-r border-slate-400 font-bold">{loan.studentName}</td>
                 <td className="p-2 border-r border-slate-400">{loan.studentId} / {loan.studyProgram}</td>
                 <td className="p-2 border-r border-slate-400">{loan.deviceName} ({loan.deviceCategory})</td>
-                <td className="p-2 border-r border-slate-400">{loan.borrowDate} s/d {loan.returnDate}</td>
+                <td className="p-2 border-r border-slate-400">
+                  {loan.borrowDate}{loan.borrowTime ? ` (${loan.borrowTime})` : ''} s/d {loan.returnDate}{loan.returnTime ? ` (${loan.returnTime})` : ''}
+                </td>
                 <td className="p-2 font-bold">{loan.status}</td>
               </tr>
             ))}

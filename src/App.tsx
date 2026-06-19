@@ -25,6 +25,7 @@ import StudentLoanList from './components/StudentLoanList';
 import ScheduleCalendar from './components/ScheduleCalendar';
 import AdminPanel from './components/AdminPanel';
 import NotificationCenter from './components/NotificationCenter';
+import PasscodeGate from './components/PasscodeGate';
 
 export default function App() {
   // 1. Core State persisted in LocalStorage for amazing fidelity
@@ -76,6 +77,9 @@ export default function App() {
 
   // 2. Navigation State
   const [activeTab, setActiveTab] = useState<'home' | 'catalog' | 'apply' | 'dashboard' | 'admin'>('home');
+  const [isPasscodeVerified, setIsPasscodeVerified] = useState<boolean>(() => {
+    return sessionStorage.getItem('sipla_passcode_verified') === 'true';
+  });
 
   // 3. Global Filters and Interactions
   const [searchCatalogQuery, setSearchCatalogQuery] = useState('');
@@ -641,19 +645,36 @@ export default function App() {
         {/* VIEW: LAUNCH LOAN APPLYING FORM */}
         {activeTab === 'apply' && (
           <div className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
-            <div>
-              <h3 className="font-extrabold text-2xl text-slate-800 text-left">Pusat Pengajuan Peminjaman</h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Lengkapi dan jadwalkan tanggal pinjam Anda. Gunakan tombol "Pinjam Sekarang" di katalog untuk memilih alat proyektor atau speaker pilihan secara cepat.
-              </p>
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+              <div>
+                <h3 className="font-extrabold text-2xl text-slate-800 text-left">Pusat Pengajuan Peminjaman</h3>
+                <p className="text-xs text-slate-400 mt-1 mt-1 text-left">
+                  Lengkapi dan jadwalkan tanggal pinjam Anda. Gunakan tombol "Pinjam Sekarang" di katalog untuk memilih alat proyektor atau speaker pilihan secara cepat.
+                </p>
+              </div>
+              {isPasscodeVerified && (
+                <div id="passcode-verified-badge" className="flex items-center gap-1.5 self-start sm:self-center bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-3 py-1.5 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Akses Terverifikasi
+                </div>
+              )}
             </div>
 
-            <LoanForm
-              devices={devices}
-              selectedDeviceOnCatalog={selectedDeviceOnCatalog}
-              onSubmitLoan={(loanPayload) => handleAddLoan(loanPayload)}
-              onClearSelectedDevice={() => setSelectedDeviceOnCatalog(null)}
-            />
+            {!isPasscodeVerified ? (
+              <PasscodeGate
+                onSuccess={() => {
+                  setIsPasscodeVerified(true);
+                  sessionStorage.setItem('sipla_passcode_verified', 'true');
+                }}
+              />
+            ) : (
+              <LoanForm
+                devices={devices}
+                selectedDeviceOnCatalog={selectedDeviceOnCatalog}
+                onSubmitLoan={(loanPayload) => handleAddLoan(loanPayload)}
+                onClearSelectedDevice={() => setSelectedDeviceOnCatalog(null)}
+              />
+            )}
           </div>
         )}
 

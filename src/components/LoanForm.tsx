@@ -10,6 +10,43 @@ interface LoanFormProps {
   onClearSelectedDevice: () => void;
 }
 
+const getTodayString = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getRoundedTimeAndReturn = () => {
+  const d = new Date();
+  let minutes = d.getMinutes();
+  let hours = d.getHours();
+
+  if (minutes > 0 && minutes <= 15) {
+    minutes = 15;
+  } else if (minutes > 15 && minutes <= 30) {
+    minutes = 30;
+  } else if (minutes > 30 && minutes <= 45) {
+    minutes = 45;
+  } else if (minutes > 45) {
+    minutes = 0;
+    hours = (hours + 1) % 24;
+  } else {
+    minutes = 0;
+  }
+
+  const startHourStr = String(hours).padStart(2, '0');
+  const startMinStr = String(minutes).padStart(2, '0');
+  const borrowTime = `${startHourStr}:${startMinStr}`;
+
+  const endHours = (hours + 2) % 24;
+  const endHourStr = String(endHours).padStart(2, '0');
+  const returnTime = `${endHourStr}:${startMinStr}`;
+
+  return { borrowTime, returnTime };
+};
+
 export default function LoanForm({
   devices,
   selectedDeviceOnCatalog,
@@ -20,10 +57,27 @@ export default function LoanForm({
   const [studentId, setStudentId] = useState('');
   const [studyProgram, setStudyProgram] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
-  const [borrowDate, setBorrowDate] = useState('');
-  const [returnDate, setReturnDate] = useState('');
+
+  const today = getTodayString();
+  const { borrowTime: initBorrow, returnTime: initReturn } = getRoundedTimeAndReturn();
+
+  const [borrowDate, setBorrowDate] = useState(today);
+  const [borrowTime, setBorrowTime] = useState(initBorrow);
+  const [returnDate, setReturnDate] = useState(today);
+  const [returnTime, setReturnTime] = useState(initReturn);
   const [selectedDeviceId, setSelectedDeviceId] = useState('');
   const [purpose, setPurpose] = useState('');
+
+  const handleBorrowTimeChange = (newTime: string) => {
+    setBorrowTime(newTime);
+    const [h, m] = newTime.split(':').map(Number);
+    if (!isNaN(h) && !isNaN(m)) {
+      const returnH = (h + 2) % 24;
+      const returnHStr = String(returnH).padStart(2, '0');
+      const returnMStr = String(m).padStart(2, '0');
+      setReturnTime(`${returnHStr}:${returnMStr}`);
+    }
+  };
 
   // Permission letter upload state
   const [permissionLetter, setPermissionLetter] = useState<File | null>(null);
@@ -84,8 +138,12 @@ export default function LoanForm({
     setStudentId('');
     setStudyProgram('');
     setMobileNumber('');
-    setBorrowDate('');
-    setReturnDate('');
+    const resetToday = getTodayString();
+    const { borrowTime: resetBorrow, returnTime: resetReturn } = getRoundedTimeAndReturn();
+    setBorrowDate(resetToday);
+    setBorrowTime(resetBorrow);
+    setReturnDate(resetToday);
+    setReturnTime(resetReturn);
     setSelectedDeviceId('');
     setPurpose('');
     setPermissionLetter(null);
@@ -107,10 +165,18 @@ export default function LoanForm({
     if (!studyProgram) return setErrorMsg('Program Studi wajib dipilih.');
     if (!mobileNumber.trim() || mobileNumber.length < 9) return setErrorMsg('Nomor WhatsApp tidak valid.');
     if (!borrowDate) return setErrorMsg('Tanggal pinjam wajib ditentukan.');
+    if (!borrowTime) return setErrorMsg('Jam pinjam wajib ditentukan.');
     if (!returnDate) return setErrorMsg('Tanggal kembali wajib ditentukan.');
+    if (!returnTime) return setErrorMsg('Jam kembali wajib ditentukan.');
+    
     if (new Date(returnDate) < new Date(borrowDate)) {
       return setErrorMsg('Tanggal kembali tidak boleh mendahului tanggal pinjam.');
     }
+    
+    if (borrowDate === returnDate && returnTime <= borrowTime) {
+      return setErrorMsg('Jam kembali harus setelah jam pinjam jika dipinjam pada hari yang sama.');
+    }
+    
     if (!selectedDeviceId) return setErrorMsg('Silakan pilih salah satu alat (proyektor/speaker) dari daftar.');
     if (!purpose.trim()) return setErrorMsg('Tujuan peminjaman wajib diisi.');
 
@@ -124,7 +190,9 @@ export default function LoanForm({
       studyProgram,
       mobileNumber,
       borrowDate,
+      borrowTime,
       returnDate,
+      returnTime,
       deviceId: selectedDeviceId,
       deviceName: targetDevice.name,
       deviceCategory: targetDevice.category,
@@ -261,6 +329,22 @@ export default function LoanForm({
               </div>
             </div>
 
+            {/* Borrow Time */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                Jam Pinjam <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="time"
+                  value={borrowTime}
+                  onChange={(e) => handleBorrowTimeChange(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-blue-500 focus:outline-none transition-colors font-mono"
+                  required
+                />
+              </div>
+            </div>
+
             {/* Return Date */}
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">
@@ -273,6 +357,22 @@ export default function LoanForm({
                   min={borrowDate || new Date().toISOString().split('T')[0]}
                   onChange={(e) => setReturnDate(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-blue-500 focus:outline-none transition-colors"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Return Time */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                Jam Kembali <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="time"
+                  value={returnTime}
+                  onChange={(e) => setReturnTime(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-blue-500 focus:outline-none transition-colors font-mono"
                   required
                 />
               </div>

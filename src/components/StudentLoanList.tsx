@@ -160,7 +160,7 @@ export default function StudentLoanList({
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                    <span className="font-mono text-slate-700 text-[10px]">{loan.borrowDate}</span>
+                    <span className="font-mono text-slate-700 text-[10px]">{loan.borrowDate}{loan.borrowTime ? ` (${loan.borrowTime})` : ''}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-bold text-slate-400">NIM:</span>
@@ -168,7 +168,9 @@ export default function StudentLoanList({
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-bold text-slate-400">Hingga:</span>
-                    <span className="font-mono text-slate-750 font-bold text-blue-600">{loan.returnDate}</span>
+                    <span className="font-mono text-[10px] font-bold text-blue-650">
+                      {loan.returnDate}{loan.returnTime ? ` (${loan.returnTime})` : ''}
+                    </span>
                   </div>
                 </div>
 
