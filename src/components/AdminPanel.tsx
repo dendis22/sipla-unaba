@@ -414,7 +414,7 @@ export default function AdminPanel({
                             onUpdateLoanStatus(loan.id, 'Approved');
                             onTriggerNotificationSim(
                               'Peminjaman Disetujui!',
-                              `Peminjaman [${loan.deviceCategory}] oleh ${loan.studentName} telah disetujui admin. QR Code siap diambil!`,
+                              `Peminjaman [${loan.deviceCategory}] oleh ${loan.studentName} telah disetujui admin. Silakan verifikasi NIM untuk mengambil alat!`,
                               'success'
                             );
                           }}

@@ -233,7 +233,7 @@ export default function LoanForm({
             Terima kasih {studentName}, permohonan pinjam alat <strong>{devices.find(d => d.id === selectedDeviceId)?.name}</strong> telah tersimpan di sistem.
           </p>
           <div className="mt-4 p-3 bg-blue-50 text-blue-800 rounded-xl text-xs max-w-sm mx-auto">
-            Menunggu konfirmasi admin. Notifikasi dan QR Code verifikasi akan segera muncul di tab Dashboard Mahasiswa Anda.
+            Menunggu konfirmasi admin. Status verifikasi akan segera muncul di tab Dashboard Mahasiswa Anda, dan Anda dapat mengambil alat dengan memverifikasi NIM Anda.
           </div>
         </div>
       ) : (

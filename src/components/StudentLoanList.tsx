@@ -4,7 +4,8 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
-  QrCode,
+  UserCheck,
+  ShieldCheck,
   Calendar,
   Phone,
   User,
@@ -28,7 +29,10 @@ export default function StudentLoanList({
   onSearchNIMChange,
   selectedStatusFilter,
 }: StudentLoanListProps) {
-  const [selectedQRVerification, setSelectedQRVerification] = useState<Loan | null>(null);
+  const [selectedNIMVerification, setSelectedNIMVerification] = useState<Loan | null>(null);
+  const [enteredNIM, setEnteredNIM] = useState('');
+  const [isNIMVerified, setIsNIMVerified] = useState(false);
+  const [nimError, setNimError] = useState(false);
 
   // Filter loans
   const filteredLoans = loans.filter((loan) => {
@@ -71,9 +75,24 @@ export default function StudentLoanList({
     }
   };
 
-  const currentActiveQRValue = selectedQRVerification
-    ? `SIPLA-${selectedQRVerification.id}-${selectedQRVerification.studentId}-${selectedQRVerification.deviceId}`
-    : '';
+  const handleVerifyNIM = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedNIMVerification) return;
+
+    if (enteredNIM.trim() === selectedNIMVerification.studentId) {
+      setIsNIMVerified(true);
+      setNimError(false);
+    } else {
+      setNimError(true);
+    }
+  };
+
+  const closeVerification = () => {
+    setSelectedNIMVerification(null);
+    setEnteredNIM('');
+    setIsNIMVerified(false);
+    setNimError(false);
+  };
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-6">
@@ -82,7 +101,7 @@ export default function StudentLoanList({
         <div>
           <h4 className="font-bold text-slate-800 text-sm">Status Pengajuan & Riwayat Pinjaman Anda</h4>
           <p className="text-xs text-slate-400 mt-0.5">
-            Ketik NIM Anda untuk melihat agenda aktif, tindak lanjut, & QR Code verifikasi.
+            Ketik NIM Anda untuk melihat agenda aktif, tindak lanjut, & verifikasi NIM.
           </p>
         </div>
 
@@ -208,10 +227,14 @@ export default function StudentLoanList({
 
                 {loan.status === 'Approved' ? (
                   <button
-                    onClick={() => setSelectedQRVerification(loan)}
+                    onClick={() => {
+                      setSelectedNIMVerification(loan);
+                      setIsNIMVerified(false);
+                      setNimError(false);
+                    }}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm hover:shadow active:scale-95 transition cursor-pointer"
                   >
-                    <QrCode className="w-3.5 h-3.5" /> Ambil Alat (QR Code)
+                    <UserCheck className="w-3.5 h-3.5" /> Ambil Alat (Verifikasi NIM)
                   </button>
                 ) : (
                   <span className="text-[11px] font-semibold text-slate-400">
@@ -224,91 +247,119 @@ export default function StudentLoanList({
         </div>
       )}
 
-      {/* QR Code pickup verification pop-up card mockup */}
-      {selectedQRVerification && (
+      {/* Interactive NIM verification pop-up card */}
+      {selectedNIMVerification && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center animate-in zoom-in-95 relative">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center animate-in zoom-in-95 relative">
             <button
-              onClick={() => setSelectedQRVerification(null)}
+              onClick={closeVerification}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold p-1 bg-slate-100 hover:bg-slate-200 rounded-full w-6 h-6 flex items-center justify-center text-xs"
             >
               ✕
             </button>
 
-            <span className="text-[11px] bg-emerald-50 text-emerald-800 font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-              QR Code Verifikasi
-            </span>
+            {!isNIMVerified ? (
+              <form onSubmit={handleVerifyNIM} className="space-y-4">
+                <span className="text-[11px] bg-blue-50 text-blue-800 font-bold px-3 py-1 rounded-full uppercase tracking-widest inline-block">
+                  Verifikasi Keamanan NIM
+                </span>
 
-            <h4 className="font-bold text-slate-800 text-lg mt-3 leading-snug">
-              {selectedQRVerification.deviceName}
-            </h4>
-            <p className="text-xs text-slate-500 mt-1">
-              Atas Nama: <strong className="text-slate-850 font-bold">{selectedQRVerification.studentName}</strong> ({selectedQRVerification.studentId})
-            </p>
+                <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto text-blue-600 mt-2">
+                  <UserCheck className="w-6 h-6" />
+                </div>
 
-            {/* Custom high contrast vectorized QR Code representation */}
-            <div className="my-6 bg-slate-50 p-4 rounded-2xl inline-block border border-slate-100">
-              <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-inner">
-                <svg viewBox="0 0 100 100" className="w-40 h-40 mx-auto text-slate-900">
-                  {/* Outer Frame Corner 1 */}
-                  <rect x="5" y="5" width="25" height="25" fill="none" stroke="currentColor" strokeWidth="4" />
-                  <rect x="11" y="11" width="13" height="13" fill="currentColor" />
+                <h4 className="font-bold text-slate-800 text-base leading-snug">
+                  Verifikasi Identitas Peminjam
+                </h4>
+                <p className="text-xs text-slate-500">
+                  Untuk mengonfirmasi pengambilan <strong>{selectedNIMVerification.deviceName}</strong>, silakan verifikasi NIM peminjam.
+                </p>
 
-                  {/* Outer Frame Corner 2 */}
-                  <rect x="70" y="5" width="25" height="25" fill="none" stroke="currentColor" strokeWidth="4" />
-                  <rect x="76" y="11" width="13" height="13" fill="currentColor" />
+                <div className="text-left space-y-1">
+                  <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Nomor Induk Mahasiswa (NIM)</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Masukkan NIM Peminjam"
+                    value={enteredNIM}
+                    onChange={(e) => {
+                      setEnteredNIM(e.target.value);
+                      if (nimError) setNimError(false);
+                    }}
+                    className={`w-full p-2.5 rounded-xl border text-sm font-mono focus:outline-none transition-all ${
+                      nimError 
+                        ? 'border-rose-300 bg-rose-50 text-rose-900 focus:ring-1 focus:ring-rose-500' 
+                        : 'border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+                    }`}
+                  />
+                  {nimError && (
+                    <p className="text-[11px] text-rose-600 font-medium">NIM tidak sesuai dengan nama peminjam!</p>
+                  )}
+                </div>
 
-                  {/* Outer Frame Corner 3 */}
-                  <rect x="5" y="70" width="25" height="25" fill="none" stroke="currentColor" strokeWidth="4" />
-                  <rect x="11" y="76" width="13" height="13" fill="currentColor" />
+                {/* Helper hint for easy demo/testing */}
+                <div className="bg-amber-50 border border-amber-100 rounded-xl p-2 text-left text-[10px] text-amber-805">
+                  <span className="font-bold block">Petunjuk Pengujian:</span>
+                  Gunakan NIM mahasiswa ini: <code className="font-mono bg-white px-1 py-0.5 rounded border border-amber-200 font-bold">{selectedNIMVerification.studentId}</code>
+                </div>
 
-                  {/* Small QR anchor alignment pattern */}
-                  <rect x="75" y="75" width="10" height="10" fill="currentColor" />
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition-colors"
+                >
+                  Verifikasi & Tampilkan Petunjuk
+                </button>
+              </form>
+            ) : (
+              <div className="space-y-4 animate-in fade-in duration-300">
+                <span className="text-[11px] bg-emerald-50 text-emerald-800 font-bold px-3 py-1 rounded-full uppercase tracking-widest inline-block">
+                  NIM Terverifikasi
+                </span>
 
-                  {/* Matrix codes random mockup */}
-                  <rect x="35" y="5" width="4" height="4" fill="currentColor" />
-                  <rect x="45" y="8" width="8" height="4" fill="currentColor" />
-                  <rect x="38" y="18" width="4" height="8" fill="currentColor" />
-                  <rect x="58" y="5" width="4" height="4" fill="currentColor" />
+                <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mx-auto text-emerald-600 mt-2">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
 
-                  <rect x="35" y="32" width="12" height="4" fill="currentColor" />
-                  <rect x="55" y="28" width="4" height="12" fill="currentColor" />
-                  <rect x="70" y="35" width="16" height="4" fill="currentColor" />
-                  <rect x="80" y="45" width="4" height="8" fill="currentColor" />
+                <h4 className="font-bold text-slate-800 text-base leading-snug">
+                  Verifikasi Berhasil!
+                </h4>
+                
+                <div className="bg-slate-50 border border-slate-100 p-3 rounded-2xl text-[11px] text-slate-600 text-left space-y-1">
+                  <div className="flex justify-between border-b pb-1 border-slate-100">
+                    <span className="text-slate-400">Peminjam</span>
+                    <span className="font-bold text-slate-850">{selectedNIMVerification.studentName}</span>
+                  </div>
+                  <div className="flex justify-between border-b pb-1 border-slate-100">
+                    <span className="text-slate-400">NIM</span>
+                    <span className="font-mono font-bold text-slate-850">{selectedNIMVerification.studentId}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-400">Peralatan</span>
+                    <span className="font-bold text-slate-850">{selectedNIMVerification.deviceName}</span>
+                  </div>
+                </div>
 
-                  <rect x="15" y="40" width="8" height="4" fill="currentColor" />
-                  <rect x="5" y="48" width="12" height="4" fill="currentColor" />
-                  <rect x="24" y="52" width="4" height="12" fill="currentColor" />
+                {/* Pickup Instructions list */}
+                <div className="text-left bg-blue-50/50 rounded-xl p-4 border border-blue-100 space-y-2 text-xs text-slate-600">
+                  <span className="font-bold text-blue-800 text-xs block">📍 Lokasi Pengambilan Alat:</span>
+                  <p className="leading-snug">
+                    Silakan datang ke <strong>Ruang Media & Laboratorium Terpadu, Gedung C Lantai 2</strong>.
+                  </p>
+                  <ul className="list-disc pl-4 space-y-1 text-[11px] text-slate-500">
+                    <li>Bawa dan tunjukkan <strong>Kartu Tanda Mahasiswa (KTM) {selectedNIMVerification.studentName}</strong> asli Anda.</li>
+                    <li>Sebutkan kepada petugas laboran bahwa NIM Anda telah terverifikasi secara digital.</li>
+                    <li>Batas waktu pengambilan: maks. tanggal <strong>{selectedNIMVerification.borrowDate}</strong>.</li>
+                  </ul>
+                </div>
 
-                  <rect x="38" y="48" width="12" height="12" fill="currentColor" />
-                  <rect x="55" y="50" width="8" height="4" fill="currentColor" />
-                  <rect x="65" y="58" width="4" height="12" fill="currentColor" />
-
-                  <rect x="35" y="70" width="4" height="20" fill="currentColor" />
-                  <rect x="45" y="75" width="16" height="4" fill="currentColor" />
-                  <rect x="48" y="85" width="12" height="8" fill="currentColor" />
-
-                  <rect x="85" y="60" width="10" height="4" fill="currentColor" />
-                  <rect x="90" y="70" width="4" height="4" fill="currentColor" />
-                </svg>
+                <button
+                  onClick={closeVerification}
+                  className="w-full bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold py-2.5 rounded-xl shadow-md transition-colors"
+                >
+                  Selesai & Tutup
+                </button>
               </div>
-              <p className="text-[10px] text-slate-400 font-mono mt-2 tracking-wider">
-                CODE: {currentActiveQRValue}
-              </p>
-            </div>
-
-            {/* Pickup Instructions list */}
-            <div className="text-left bg-blue-50/50 rounded-xl p-4 border border-blue-100 space-y-2 text-xs text-slate-600">
-              <span className="font-bold text-blue-800 text-xs block">📍 Lokasi Pengambilan Alat:</span>
-              <p className="leading-snug">
-                Silakan datang ke <strong>Ruang Media & Laboratorium Terpadu, Gedung C Lantai 2</strong>.
-              </p>
-              <ul className="list-disc pl-4 space-y-1 text-[11px] text-slate-500">
-                <li>Bawa dan tunjukkan <strong>Kartu Tanda Mahasiswa (KTM)</strong> Anda.</li>
-                <li>Tunjukkan layar berisi QR Code verifikasi ini ke petugas.</li>
-                <li>Batas waktu pengambilan: maks. tanggal <strong>{selectedQRVerification.borrowDate}</strong>.</li>
-              </ul>
-            </div>
+            )}
           </div>
         </div>
       )}

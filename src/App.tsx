@@ -527,9 +527,9 @@ export default function App() {
                   <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                     <Smartphone className="w-5 h-5" />
                   </div>
-                  <h5 className="font-bold text-slate-800 text-sm">Pickup Tanpa Dokumen Fisik</h5>
+                  <h5 className="font-bold text-slate-800 text-sm">Pickup dengan Verifikasi NIM</h5>
                   <p className="text-xs text-slate-500 leading-relaxed">
-                    Instan pickup. Cukup bawa berkas QR Code digital yang terverifikasi ke unit laboratorium untuk ditransfer langsung.
+                    Instan pickup. Cukup lakukan verifikasi NIM secara praktis di loket laboratorium untuk serah terima langsung tanpa dokumen fisik.
                   </p>
                 </div>
               </div>
@@ -683,7 +683,7 @@ export default function App() {
           <div className="space-y-8 animate-in fade-in duration-300">
             <div>
               <h3 className="font-extrabold text-2xl text-slate-800">Dashboard Kemahasiswaan & Riwayat</h3>
-              <p className="text-xs text-slate-400 mt-1">Lacak tiket pinjaman Anda, dapatkan QR Code pickup, & pantau verifikasi dari tim administrasi.</p>
+              <p className="text-xs text-slate-400 mt-1">Lacak tiket pinjaman Anda, lakukan verifikasi NIM, & pantau verifikasi dari tim administrasi.</p>
             </div>
 
             {/* Metric counters */}
@@ -709,7 +709,7 @@ export default function App() {
               <div>
                 <p className="font-bold text-slate-800">Butuh Bantuan Pickup?</p>
                 <p className="text-slate-500 mt-1">
-                  Jika status pinjaman Anda telah berubah menjadi <strong>"Disetujui"</strong>, Anda dapat segera menekan tombol <strong>"Ambil Alat"</strong> untuk memunculkan tiket kode QR unik Anda. Tunjukkan tiket tersebut ke pengawas laboran guna serah terima langsung.
+                  Jika status pinjaman Anda telah berubah menjadi <strong>"Disetujui"</strong>, Anda dapat segera menekan tombol <strong>"Ambil Alat (Verifikasi NIM)"</strong>, masukkan NIM Anda untuk membuktikan identitas akademis Anda yang sah, lalu tunjukkan konfirmasi tersebut ke pengawas laboran guna serah terima langsung.
                 </p>
               </div>
             </div>
